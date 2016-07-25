@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:spring="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/apikit http://www.mulesoft.org/schema/mule/apikit/current/mule-apikit.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+    <!-- HTTP Listener Connector -->
+    <http:listener-config name="api-httpListenerConfig" host="${api.http.listener.host}" port="${api.http.listener.port}" doc:name="HTTP Listener Configuration" />
+    <!-- APIkit Router Configuration -->
+    <apikit:config name="api-config" raml="api.raml" consoleEnabled="true" doc:name="Router" />
+    <flow name="api-main">
+        <http:listener config-ref="api-httpListenerConfig" path="${api.http.listener.path}" doc:name="HTTP" />
+        <apikit:router config-ref="api-config" doc:name="APIkit Router" />
+        <exception-strategy ref="global-exception-strategy" doc:name="Reference Exception Strategy" />
+    </flow>
+</mule>

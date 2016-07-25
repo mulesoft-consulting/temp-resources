@@ -1,0 +1,16 @@
+#%RAML 0.8
+title: Template API
+version: 1.0
+baseUri: http://template.api.havenpower.com/api/template/v1
+
+/resource:
+  get:
+    description: Example resource.
+    responses:
+      200:
+        body:
+          application/json:
+            example: |
+              {
+                "message": "This is a dummy RAML that shoud be replaced with the actual API RAML."
+              }

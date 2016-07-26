@@ -12,25 +12,25 @@ http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee
         <catch-exception-strategy when="#[exception.causedBy(org.mule.module.http.internal.request.ResponseValidatorException)]" doc:name="Caused By (org.mule.module.http.internal.request.ResponseValidatorException)">
             <choice doc:name="Choice">
                 <when expression="#[message.inboundProperties['http.status'] == 403 &amp;&amp; message.inboundProperties['http.status'] == 502]">
-                    <set-variable variableName="comments" value="Access to the upstream service is forbidden." doc:name="Set Comments"/>
+                    <set-variable variableName="errorMessage" value="Access to the upstream service is forbidden." doc:name="Set Error Message"/>
                     <flow-ref name="global-bad-gateway-response-sub-flow" doc:name="Bad Gateway Response"/>
                 </when>
                 <when expression="#[message.inboundProperties['http.status'] &lt; 500]">
-                    <set-variable variableName="comments" value="Upstream service unable to fulfil request." doc:name="Set Comments"/>
+                    <set-variable variableName="errorMessage" value="Upstream service unable to fulfil request." doc:name="Set Error Message"/>
                     <flow-ref name="global-bad-gateway-response-sub-flow" doc:name="Bad Gateway Response"/>                    
                 </when>
                 <otherwise>
-                    <set-variable variableName="comments" value="Upstream service internal error." doc:name="Set Comments"/>
+                    <set-variable variableName="errorMessage" value="Upstream service internal error." doc:name="Set Error Message"/>
                     <flow-ref name="global-bad-gateway-response-sub-flow" doc:name="Bad Gateway Response"/>                
                 </otherwise>
             </choice>
         </catch-exception-strategy>
         <catch-exception-strategy when="#[exception.causedBy(java.util.concurrent.TimeoutException)]" doc:name="Caused By (java.util.concurrent.TimeoutException)">
-            <set-variable variableName="comments" value="Unable to connect to upstream service. Request timed out." doc:name="Set Comments"/>
+            <set-variable variableName="errorMessage" value="Unable to connect to upstream service. Request timed out." doc:name="Set Error Message"/>
             <flow-ref name="global-bad-gateway-response-sub-flow" doc:name="Bad Gateway Response"/>            
         </catch-exception-strategy>
         <catch-exception-strategy when="#[exception.causeMatches('java.net')]" doc:name="Cause Matches ('java.net')">
-            <set-variable variableName="comments" value="Unable to connect to upstream service." doc:name="Set Comments"/>
+            <set-variable variableName="errorMessage" value="Unable to connect to upstream service." doc:name="Set Error Message"/>
             <flow-ref name="global-bad-gateway-response-sub-flow" doc:name="Bad Gateway Response"/>            
         </catch-exception-strategy>
         <catch-exception-strategy when="#[exception.causedBy(org.mule.module.apikit.exception.NotFoundException)]" doc:name="Caused By (org.mule.module.apikit.exception.NotFoundException)">            
@@ -49,54 +49,66 @@ http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee
             <flow-ref name="global-bad-request-response-sub-flow" doc:name="Bad Request Response"/>
         </catch-exception-strategy>
         <catch-exception-strategy doc:name="Default">
-            <set-variable variableName="comments" value="Unable to fullfil request due to internal error." doc:name="Set Comments"/>
+            <set-variable variableName="errorMessage" value="Unable to fullfil request due to internal error." doc:name="Set Error Message"/>
             <flow-ref name="global-internal-server-error-response-sub-flow" doc:name="Internal Server Response"/>
         </catch-exception-strategy>
     </choice-exception-strategy>
     
     <sub-flow name="global-bad-request-response-sub-flow">
         <set-property propertyName="http.status" value="400" doc:name="Set Status"/>
-        <set-payload value="Bad request" doc:name="Set Message" mimeType="application/java"/>
+        <set-payload value="BAD_REQUEST" doc:name="Set Error Code" mimeType="application/java"/>
         <flow-ref name="global-prepare-error-response-sub-flow" doc:name="Prepare Error Response"/>
     </sub-flow>
     <sub-flow name="global-resource-not-found-response-sub-flow">
         <set-property propertyName="http.status" value="404" doc:name="Set Status"/>
-        <set-payload value="Resource not found" doc:name="Set Message" mimeType="application/java"/>
+        <set-payload value="RESOURCE_NOT_FOUND" doc:name="Set Error Code" mimeType="application/java"/>
         <flow-ref name="global-prepare-error-response-sub-flow" doc:name="Prepare Error Response"/>
     </sub-flow>
     <sub-flow name="global-method-not-allowed-response-sub-flow">
         <set-property propertyName="http.status" value="405" doc:name="Set Status"/>
-        <set-payload value="Method not allowed" doc:name="Set Message" mimeType="application/java"/>
+        <set-payload value="METHOD_NOT_ALLOWED" doc:name="Set Error Code" mimeType="application/java"/>
         <flow-ref name="global-prepare-error-response-sub-flow" doc:name="Prepare Error Response"/>
     </sub-flow>
     <sub-flow name="global-not-acceptable-response-sub-flow">
         <set-property propertyName="http.status" value="406" doc:name="Set Status"/>
-        <set-payload value="Not acceptable" doc:name="Set Message" mimeType="application/java"/>
+        <set-payload value="NOT_ACCEPTABLE" doc:name="Set Error Code" mimeType="application/java"/>
         <flow-ref name="global-prepare-error-response-sub-flow" doc:name="Prepare Error Response"/>
     </sub-flow>
     <sub-flow name="global-conflict-response-sub-flow">
         <set-property propertyName="http.status" value="409" doc:name="Set Status"/>
-        <set-payload value="Conflict" doc:name="Set Message" mimeType="application/java"/>
+        <set-payload value="CONFLICT" doc:name="Set Error Code" mimeType="application/java"/>
         <flow-ref name="global-prepare-error-response-sub-flow" doc:name="Prepare Error Response"/>
     </sub-flow>
     <sub-flow name="global-unsupported-media-type-response-sub-flow">
         <set-property propertyName="http.status" value="415" doc:name="Set Status"/>
-        <set-payload value="Unsupported media type" doc:name="Set Message" mimeType="application/java"/>
+        <set-payload value="UNSUPPORTED_MEDIA_TYPE" doc:name="Set Error Code" mimeType="application/java"/>
         <flow-ref name="global-prepare-error-response-sub-flow" doc:name="Prepare Error Response"/>
     </sub-flow>
     <sub-flow name="global-internal-server-error-response-sub-flow">
         <set-property propertyName="http.status" value="500" doc:name="Set Status"/>
-        <set-payload value="Internal server error" doc:name="Set Message" mimeType="application/java"/>
+        <set-payload value="INTERNAL_SERVER_ERROR" doc:name="Set Error Code" mimeType="application/java"/>
         <flow-ref name="global-prepare-error-response-sub-flow" doc:name="Prepare Error Response"/>
     </sub-flow>
     <sub-flow name="global-bad-gateway-response-sub-flow">
         <set-property propertyName="http.status" value="502" doc:name="Set Status"/>
-        <set-payload value="Bad gateway" doc:name="Set Message" mimeType="application/java"/>
+        <set-payload value="BAD_GATEWAY" doc:name="Set Error Code" mimeType="application/java"/>
         <flow-ref name="global-prepare-error-response-sub-flow" doc:name="Prepare Error Response"/>
     </sub-flow>
     
     <sub-flow name="global-prepare-error-response-sub-flow">
-        <set-payload value="{ &quot;message&quot;: &quot;#[payload]&quot;#[flowVars.comments != null ? (', &quot;comments&quot;: &quot;' + flowVars.comments + '&quot;') : ('')] }" encoding="UTF-8" mimeType="application/json" doc:name="Set Error Response"/>
+        <dw:transform-message doc:name="Create Error Message">
+            <dw:set-payload><![CDATA[%dw 1.0
+%output application/json encoding="UTF-8", skipNullOn="everywhere"
+---
+{
+	error: {
+		errorCode: payload,
+		errorDateTime: now as :string { format: "yyyy-MM-dd'T'HH:mm:ssZ" },
+		errorMessage: flowVars.errorMessage,
+		errorDescription: flowVars.errorDescription
+	}
+}]]></dw:set-payload>
+        </dw:transform-message>
         <set-property propertyName="Content-Type" value="application/json" doc:name="Set Content Type"/>
     </sub-flow>
     

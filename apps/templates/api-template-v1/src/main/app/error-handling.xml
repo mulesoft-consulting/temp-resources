@@ -11,7 +11,11 @@ http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee
     <choice-exception-strategy name="global-exception-strategy">    
         <catch-exception-strategy when="#[exception.causedBy(org.mule.module.http.internal.request.ResponseValidatorException)]" doc:name="Caused By (org.mule.module.http.internal.request.ResponseValidatorException)">
             <choice doc:name="Choice">
-                <when expression="#[message.inboundProperties['http.status'] == 403 &amp;&amp; message.inboundProperties['http.status'] == 502]">
+                <when expression="#[message.inboundProperties['http.status'] == 401]">
+                    <set-variable variableName="errorMessage" value="Upstream service did not authorize the request." doc:name="Set Error Message"/>
+                    <flow-ref name="global-bad-gateway-response-sub-flow" doc:name="Bad Gateway Response"/>
+                </when>
+                <when expression="#[message.inboundProperties['http.status'] == 403]">
                     <set-variable variableName="errorMessage" value="Access to the upstream service is forbidden." doc:name="Set Error Message"/>
                     <flow-ref name="global-bad-gateway-response-sub-flow" doc:name="Bad Gateway Response"/>
                 </when>

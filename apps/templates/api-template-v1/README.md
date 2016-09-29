@@ -16,7 +16,7 @@ The template is designed to be customized. Basic customization should be done ev
 
 ![Customize 01](./img/customize_01.png)
 
-(2) Open the `pom.xml` file in the Anypoint Studio project to update it with the actual Maven artifact's coordinates. Update `<groupId>` with the actual package name (e.g. `com.havenpower`). Change `<artifactId>` with the project name that has been set in the step above (e.g. `my-new-api-v1`). Save `pom.xml` file and let Anypoint Studio re-build the project.
+(2) Open the `pom.xml` file in the Anypoint Studio project to update it with the actual Maven artifact's coordinates. Update `<groupId>` with the actual package name (e.g. `com.mycompany`). Change `<artifactId>` with the project name that has been set in the step above (e.g. `my-new-api-v1`). Save `pom.xml` file and let Anypoint Studio re-build the project.
 
 ![Customize 02](./img/customize_02.png)
 
